@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Transleentor</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+</head>
+<body>
+  <h1>🧠 Transleentor</h1>
+  <textarea id="input" rows="5" cols="50" placeholder="Type your boring non-Een text here..."></textarea>
+  <br>
+  <button onclick="eenify()">Eenify It</button>
+  <h3>Output:</h3>
+  <div id="output"></div>
+
+  <script>
+    let dictionary = {};
+
+    Papa.parse("translations.csv", {
+      download: true,
+      header: true,
+      complete: function(results) {
+        results.data.forEach(row => {
+          dictionary[row.normal.toLowerCase()] = row.eenlandic;
+        });
+      }
+    });
+
+    function eenify() {
+      const input = document.getElementById('input').value;
+      const words = input.split(/\b/); // splits but keeps punctuation
+      const output = words.map(word => {
+        const lower = word.toLowerCase();
+        return dictionary[lower] ? preserveCase(word, dictionary[lower]) : word;
+      }).join('');
+      document.getElementById('output').innerText = output;
+    }
+
+    function preserveCase(original, replacement) {
+      if (original[0] === original[0].toUpperCase()) {
+        return replacement.charAt(0).toUpperCase() + replacement.slice(1);
+      }
+      return replacement;
+    }
+  </script>
+</body>
+</html>
